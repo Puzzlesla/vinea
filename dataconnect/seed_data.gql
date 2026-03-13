@@ -1,0 +1,89 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This operation is for seeding demo data and should only be run by authenticated users with appropriate permissions during development or testing.") {
+  user_insertMany(data: [
+    {
+      id: "c4b4a1b0-2b2f-4c2f-8b2f-1c4b4a1b02b2",
+      displayName: "Demo User 1",
+      email: "demo1@example.com",
+      createdAt: "2023-01-01T00:00:00Z"
+    },
+    {
+      id: "d5c5b2c1-3c3g-5d3g-9c3g-2d5c5b2c13c3",
+      displayName: "Demo User 2",
+      email: "demo2@example.com",
+      createdAt: "2023-01-02T00:00:00Z"
+    }
+  ])
+  project_insertMany(data: [
+    {
+      id: "a1b1c1d1-e1f1-4a1b-8c1d-1e1f1a1b1c1d",
+      userId: "c4b4a1b0-2b2f-4c2f-8b2f-1c4b4a1b02b2",
+      title: "My First Project",
+      status: "In Progress",
+      description: "A demo project for showcasing features.",
+      aiGenerated: false,
+      currentPoints: 10,
+      currentStreak: 2,
+      createdAt: "2023-01-03T00:00:00Z"
+    },
+    {
+      id: "b2c2d2e2-f2g2-4b2c-9d2e-2f2g2b2c2d2e",
+      userId: "d5c5b2c1-3c3g-5d3g-9c3g-2d5c5b2c13c3",
+      title: "Another Demo Project",
+      status: "Completed",
+      description: "This project is already finished.",
+      aiGenerated: true,
+      currentPoints: 50,
+      currentStreak: 7,
+      createdAt: "2023-01-04T00:00:00Z"
+    }
+  ])
+  step_insertMany(data: [
+    {
+      id: "e3f3g3h3-i3j3-4e3f-8g3h-3i3j3e3f3g3h",
+      projectId: "a1b1c1d1-e1f1-4a1b-8c1d-1e1f1a1b1c1d",
+      title: "Initial Setup",
+      order: 1,
+      status: "Completed",
+      description: "Setting up the project environment.",
+      createdAt: "2023-01-03T01:00:00Z",
+      completedAt: "2023-01-03T02:00:00Z"
+    },
+    {
+      id: "f4g4h4i4-j4k4-4f4g-9h4i-4j4k4f4g4h4i",
+      projectId: "a1b1c1d1-e1f1-4a1b-8c1d-1e1f1a1b1c1d",
+      title: "Develop Feature A",
+      order: 2,
+      status: "In Progress",
+      description: "Working on the first core feature.",
+      createdAt: "2023-01-03T03:00:00Z"
+    },
+    {
+      id: "g5h5i5j5-k5l5-4g5h-8i5j-5k5l5g5h5i5j",
+      projectId: "b2c2d2e2-f2g2-4b2c-9d2e-2f2g2b2c2d2e",
+      title: "Final Review",
+      order: 1,
+      status: "Completed",
+      description: "Reviewing the completed project.",
+      createdAt: "2023-01-04T01:00:00Z",
+      completedAt: "2023-01-04T03:00:00Z"
+    }
+  ])
+  resource_insertMany(data: [
+    {
+      id: "h6i6j6k6-l6m6-4h6i-8j6k-6l6m6h6i6j6k",
+      stepId: "e3f3g3h3-i3j3-4e3f-8g3h-3i3j3e3f3g3h",
+      title: "Setup Guide",
+      url: "https://example.com/setup-guide",
+      description: "Documentation for project setup.",
+      createdAt: "2023-01-03T01:15:00Z"
+    },
+    {
+      id: "i7j7k7l7-m7n7-4i7j-9k7l-7m7n7i7j7k7l",
+      stepId: "f4g4h4i4-j4k4-4f4g-9h4i-4j4k4f4g4h4i",
+      title: "Feature A Design Doc",
+      url: "https://example.com/feature-a-design",
+      description: "Detailed design document for Feature A.",
+      createdAt: "2023-01-03T03:30:00Z"
+    }
+  ])
+}

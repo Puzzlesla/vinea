@@ -1,0 +1,36 @@
+type User @table {
+  email: String!
+  displayName: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  lastLoginAt: Timestamp
+}
+
+type Project @table {
+  user: User!
+  title: String!
+  createdAt: Timestamp!
+  status: String!
+  description: String
+  aiGenerated: Boolean
+  currentPoints: Int
+  currentStreak: Int
+}
+
+type Step @table {
+  project: Project!
+  title: String!
+  order: Int!
+  status: String!
+  createdAt: Timestamp!
+  description: String
+  completedAt: Timestamp
+}
+
+type Resource @table {
+  step: Step!
+  title: String!
+  url: String!
+  createdAt: Timestamp!
+  description: String
+}

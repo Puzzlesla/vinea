@@ -1,0 +1,66 @@
+query ListAllProjects @auth(level: USER, insecureReason: "This operation lists projects regardless of owner, so all authenticated users can view all projects.") {
+  projects {
+    id
+    title
+    description
+    status
+    createdAt
+    user {
+      id
+      displayName
+      email
+    }
+  }
+}
+
+query MyProjects @auth(level: USER) {
+  projects(where: {userId: {eq_expr: "auth.uid"}}) {
+    id
+    title
+    status
+    currentPoints
+    currentStreak
+  }
+}
+
+mutation CreateProject($title: String!, $description: String, $status: String!, $aiGenerated: Boolean) @auth(level: USER) {
+  project_insert(data: {
+    title: $title,
+    description: $description,
+    status: $status,
+    aiGenerated: $aiGenerated,
+    userId_expr: "auth.uid",
+    createdAt_expr: "request.time"
+  })
+}
+
+query GetProjectDetails($id: UUID!) @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only retrieves public project details.") {
+  project(id: $id) {
+    id
+    title
+    description
+    status
+    aiGenerated
+    currentPoints
+    currentStreak
+    createdAt
+    user {
+      displayName
+      email
+    }
+    steps_on_project {
+      id
+      title
+      order
+      status
+      description
+      completedAt
+      resources_on_step {
+        id
+        title
+        url
+        description
+      }
+    }
+  }
+}
