@@ -1,0 +1,36 @@
+.blank-dash {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.blank-dash__label {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.blank-dash__cta {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: #f8c8d0;
+  color: #1a1a1a;
+  box-shadow: 0 4px 14px rgba(233, 169, 188, 0.35);
+}
+
+.blank-dash__cta:hover {
+  filter: brightness(1.03);
+}
