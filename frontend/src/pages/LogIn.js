@@ -1,4 +1,5 @@
 import { auth, googleProvider } from '../firebase.js';
+import BottomNav from '../components/BottomNav'
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -65,6 +66,7 @@ const Auth = () => {
 // export default Auth;
     // Responsive, two-column layout with large tree visual
     return (
+        <>
         <div style={{
             minHeight: '100vh',
             width: '100vw',
@@ -234,6 +236,8 @@ const Auth = () => {
                 }
             `}</style>
         </div>
+        <BottomNav />
+        </>
     );
 }
 export default Auth;

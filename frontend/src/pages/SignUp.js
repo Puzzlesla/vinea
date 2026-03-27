@@ -1,4 +1,5 @@
 import { auth, googleProvider } from '../firebase.js';
+import BottomNav from '../components/BottomNav'
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useState } from 'react';
 import logInTree from '../assets/logInTree.svg';
@@ -29,6 +30,7 @@ const SignUp = () => {
     };
 
     return (
+        <>
         <div style={{
             minHeight: '100vh',
             width: '100vw',
@@ -204,6 +206,8 @@ const SignUp = () => {
                 }
             `}</style>
         </div>
+        <BottomNav />
+        </>
     );
 };
 
