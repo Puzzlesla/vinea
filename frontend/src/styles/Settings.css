@@ -1,0 +1,279 @@
+/* ──────────────────────────────────────────
+   Settings.css  –  PromptAI Forest Theme
+────────────────────────────────────────── */
+
+.settings {
+  min-height: 100dvh;
+  background: #fce8ee;
+  font-family: 'Nunito', 'Rounded Mplus 1c', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 80px;
+  position: relative;
+}
+
+/* Ambient glow */
+.settings::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 30%, rgba(255,255,255,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 80%, rgba(252,200,220,0.25) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.settings__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Page title ── */
+.settings__title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #9b2145;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+
+/* ── Cards ── */
+.settings__card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow:
+    0 4px 24px rgba(200, 80, 120, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  border: 1.5px solid rgba(255, 160, 190, 0.2);
+  animation: card-enter 0.4s ease both;
+}
+
+.settings__card:nth-child(2) { animation-delay: 0.05s; }
+.settings__card:nth-child(3) { animation-delay: 0.10s; }
+.settings__card:nth-child(4) { animation-delay: 0.15s; }
+
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Danger card variant */
+.settings__card--danger {
+  background: rgba(255, 240, 245, 0.8);
+  border-color: rgba(255, 100, 130, 0.3);
+}
+
+/* ── Card heading ── */
+.settings__card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #f497a9;
+  margin: 0 0 18px;
+  letter-spacing: 0.01em;
+}
+
+.settings__card-title--danger {
+  color: #e03050;
+}
+
+/* ── Divider ── */
+.settings__divider {
+  border: none;
+  border-top: 1.5px solid rgba(255, 160, 190, 0.2);
+  margin: 14px 0;
+}
+
+/* ── Row (label + control side by side) ── */
+.settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings__row-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7a2040;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.settings__row-desc {
+  font-size: 12px;
+  color: #b07090;
+  margin: 0;
+}
+
+/* ── Toggle switch ── */
+.settings__toggle {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: #ddd;
+  border-radius: 99px;
+  border: none;
+  padding: 3px;
+  transition: background 0.25s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.settings__toggle--on {
+  background: linear-gradient(135deg, #f497a9, #f06090);
+  box-shadow: 0 2px 8px rgba(240,100,144,0.35);
+}
+
+.settings__toggle-knob {
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transform: translateX(0);
+  transition: transform 0.22s ease;
+}
+
+.settings__toggle--on .settings__toggle-knob {
+  transform: translateX(22px);
+}
+
+/* ── Select dropdown ── */
+.settings__select {
+  background: rgba(255, 240, 245, 0.9);
+  border: 1.5px solid rgba(255, 160, 190, 0.4);
+  color: #7a2040;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  flex-shrink: 0;
+}
+
+.settings__select:focus {
+  border-color: #f497a9;
+  box-shadow: 0 0 0 3px rgba(244, 151, 169, 0.2);
+}
+
+/* ── Text buttons (Change name, Reset password etc.) ── */
+.settings__btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 16px;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #7a2040;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+  margin-bottom: 4px;
+}
+
+.settings__btn:last-child {
+  margin-bottom: 0;
+}
+
+.settings__btn:hover {
+  background: rgba(255, 200, 220, 0.3);
+  border-color: rgba(255, 160, 190, 0.4);
+  transform: translateX(3px);
+}
+
+/* Sign out button */
+.settings__btn--signout {
+  margin-top: 8px;
+  background: rgba(255, 200, 220, 0.25);
+  border-color: rgba(255, 160, 190, 0.25);
+  color: #9b2145;
+  font-size: 14px;
+  text-align: center;
+}
+
+.settings__btn--signout:hover {
+  background: rgba(255, 180, 205, 0.45);
+  transform: none;
+}
+
+/* ── Danger description text ── */
+.settings__danger-desc {
+  font-size: 12px;
+  color: #b07090;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* ── Delete button ── */
+.settings__btn--delete {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid rgba(255, 100, 130, 0.4);
+  border-radius: 14px;
+  background: rgba(255, 220, 225, 0.5);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: #c02040;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.settings__btn--delete:hover {
+  background: rgba(255, 180, 190, 0.65);
+  box-shadow: 0 2px 12px rgba(200, 40, 80, 0.18);
+  transform: scale(1.01);
+}
+
+/* ── Back button ── */
+.settings__back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: #c07090;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.settings__back:hover {
+  color: #9b2145;
+  transform: translateX(-3px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .settings {
+    padding: 24px 14px 80px;
+  }
+  .settings__title {
+    font-size: 26px;
+  }
+  .settings__card {
+    padding: 18px 16px;
+  }
+}

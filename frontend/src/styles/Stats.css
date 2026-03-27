@@ -1,0 +1,338 @@
+/* ──────────────────────────────────────────
+   Stats.css  –  PromptAI Forest Theme
+────────────────────────────────────────── */
+
+.stats {
+  min-height: 100dvh;
+  background: #fce8ee;
+  font-family: 'Nunito', 'Rounded Mplus 1c', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 20px 80px;
+  position: relative;
+}
+
+/* Ambient glow */
+.stats::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 45% at 75% 25%, rgba(255,255,255,0.42) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 15% 80%, rgba(252,200,220,0.28) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stats__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Back + title ── */
+.stats__back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: #c07090;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 4px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.stats__back:hover {
+  color: #9b2145;
+  transform: translateX(-3px);
+}
+
+.stats__title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #9b2145;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+/* ── Shared card base ── */
+.stats__card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1.5px solid rgba(255, 160, 190, 0.22);
+  box-shadow: 0 4px 24px rgba(200, 80, 120, 0.10);
+  animation: card-enter 0.4s ease both;
+  overflow: hidden;
+}
+
+.stats__card:nth-child(2) { animation-delay: 0.05s; }
+.stats__card:nth-child(3) { animation-delay: 0.10s; }
+.stats__card:nth-child(4) { animation-delay: 0.15s; }
+
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Identity card (top) ── */
+.stats__identity {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  position: relative;
+}
+
+/* Decorative blob */
+.stats__identity::after {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(244, 151, 169, 0.12);
+  pointer-events: none;
+}
+
+.stats__avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border: 3px solid rgba(255,255,255,0.9);
+  box-shadow: 0 4px 16px rgba(200,80,120,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.stats__identity-info {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.stats__display-name {
+  font-size: 26px;
+  font-weight: 900;
+  color: #7a2040;
+  margin: 0 0 2px;
+  letter-spacing: -0.01em;
+}
+
+.stats__join-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c07090;
+  margin: 0 0 16px;
+}
+
+/* Level row */
+.stats__level-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.stats__level-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f497a9;
+}
+
+.stats__level-xp {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c07090;
+}
+
+/* XP progress bar */
+.stats__bar-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 160, 190, 0.2);
+  border-radius: 99px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(200,80,120,0.1);
+}
+
+.stats__bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #f497a9, #f06090);
+  transition: width 1s ease-out;
+  box-shadow: 0 1px 4px rgba(240,96,144,0.3);
+}
+
+.stats__bar-hint {
+  font-size: 10px;
+  font-weight: 700;
+  color: #c07090;
+  text-align: right;
+  margin-top: 5px;
+}
+
+/* ── Stats grid ── */
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stats__stat-card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  border: 1.5px solid rgba(255,160,190,0.22);
+  box-shadow: 0 4px 16px rgba(200,80,120,0.08);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: card-enter 0.4s ease both;
+}
+
+.stats__stat-card:nth-child(1) { animation-delay: 0.10s; }
+.stats__stat-card:nth-child(2) { animation-delay: 0.16s; }
+.stats__stat-card:nth-child(3) { animation-delay: 0.22s; }
+
+.stats__stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 28px rgba(200,80,120,0.15);
+}
+
+/* Icon circle */
+.stats__stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.stats__stat-icon--xp      { background: rgba(160,230,180,0.3); }
+.stats__stat-icon--tasks   { background: rgba(160,190,255,0.3); }
+.stats__stat-icon--projects{ background: rgba(200,160,255,0.3); }
+
+.stats__stat-value {
+  font-size: 36px;
+  font-weight: 900;
+  color: #7a2040;
+  line-height: 1;
+}
+
+.stats__stat-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #c07090;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Streak widget ── */
+.stats__streak-card {
+  background: linear-gradient(135deg, rgba(255,240,220,0.85), rgba(255,230,200,0.85));
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1.5px solid rgba(255,180,100,0.3);
+  box-shadow: 0 4px 20px rgba(200,120,40,0.10);
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  animation: card-enter 0.4s ease both;
+  animation-delay: 0.28s;
+}
+
+.stats__streak-heading {
+  font-size: 20px;
+  font-weight: 900;
+  color: #8a4010;
+  margin: 0 0 4px;
+}
+
+.stats__streak-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b06030;
+  margin: 0;
+}
+
+.stats__streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.75);
+  border: 1.5px solid rgba(255,180,100,0.35);
+  border-radius: 18px;
+  padding: 12px 22px;
+  flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(200,120,40,0.12);
+}
+
+.stats__streak-flame {
+  font-size: 32px;
+  animation: flame-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes flame-pulse {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.15) rotate(5deg); }
+}
+
+.stats__streak-count {
+  font-size: 36px;
+  font-weight: 900;
+  color: #d06020;
+  line-height: 1;
+}
+
+.stats__streak-unit {
+  font-size: 13px;
+  font-weight: 800;
+  color: #c07040;
+}
+
+/* ── Responsive ── */
+@media (max-width: 560px) {
+  .stats__identity {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+  .stats__identity-info { width: 100%; }
+  .stats__grid {
+    grid-template-columns: 1fr;
+  }
+  .stats__streak-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .stats__title { font-size: 26px; }
+}
