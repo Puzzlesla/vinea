@@ -1,6 +1,5 @@
 import '../styles/Dashboard.css'
-// ...existing code...
-// Icons are now handled by BottomNav
+import BottomNav from '../components/BottomNav'
 import streakIcon from '../assets/whatshot.svg'
 import tree1 from '../assets/tree1.svg'
 import tree2 from '../assets/tree2.svg'
@@ -14,7 +13,6 @@ import { auth, db } from '../firebase.js'
 
 const treeSprites = [tree1, tree2]
 
-// Each butterfly: path animation moves it across & off screen
 const BUTTERFLIES = [
   { id: 1, sprite: butterflyLight,      animClass: 'bf-path-1' },
   { id: 2, sprite: butterflyLightRight, animClass: 'bf-path-2' },
@@ -23,62 +21,56 @@ const BUTTERFLIES = [
   { id: 5, sprite: butterflyLightRight, animClass: 'bf-path-5' },
 ]
 
-// Scattered layout matching the design — isometric feel
 const TREE_POSITIONS = [
-  { x: '26%', y: '6%',  size: 'sm'  },
-  { x: '48%', y: '4%',  size: 'md'  },
-  { x: '68%', y: '10%', size: 'sm'  },
-  { x: '30%', y: '44%', size: 'lg'  },
-  { x: '56%', y: '36%', size: 'xl'  },
-  { x: '78%', y: '52%', size: 'md'  },
-  { x: '18%', y: '70%', size: 'sm'  },
-  { x: '88%', y: '14%', size: 'sm'  },
+  { x: '26%', y: '6%',  size: 'sm' },
+  { x: '48%', y: '4%',  size: 'md' },
+  { x: '68%', y: '10%', size: 'sm' },
+  { x: '30%', y: '44%', size: 'lg' },
+  { x: '56%', y: '36%', size: 'xl' },
+  { x: '78%', y: '52%', size: 'md' },
+  { x: '18%', y: '70%', size: 'sm' },
+  { x: '88%', y: '14%', size: 'sm' },
 ]
 
 function formatDate(isoStr) {
   if (!isoStr) return '—'
-  const d = new Date(isoStr)
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  return new Date(isoStr).toLocaleDateString('en-GB', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  })
 }
 
-export default function Dashboard() {
-  const [projects, setProjects]         = useState([])
-  const [loading, setLoading]           = useState(true)
-  const [user, setUser]                 = useState(auth.currentUser)
-  const [hoveredProject, setHovered]   = useState(null)
+// Accepts optional `user` prop from DashboardOrBlank to skip re-resolving auth
+export default function Dashboard({ user: userProp }) {
+  const [projects, setProjects]      = useState([])
+  const [loading, setLoading]        = useState(true)
+  const [hoveredProject, setHovered] = useState(null)
+  const [userStreak, setUserStreak]  = useState(0)
+  const [user, setUser]              = useState(userProp ?? auth.currentUser)
+  const navigate = useNavigate()
 
-  const [userStreak, setUserStreak]     = useState(0)
-  const navigate  = useNavigate()
-
-
-  // Auth listener
   useEffect(() => {
+    if (userProp) return // already have user from parent
     const unsub = auth.onAuthStateChanged((u) => setUser(u))
     return () => unsub()
-  }, [])
+  }, [userProp])
 
-  // Fetch projects — field is `userId` per your Firestore schema
   useEffect(() => {
     if (!user) return
+    setLoading(true)
     const q = query(collection(db, 'projects'), where('userId', '==', user.uid))
     getDocs(q)
       .then((snapshot) => {
-        const allProjects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-        // Only show projects that are not archived or completed
-        const activeProjects = allProjects.filter(p => p.status !== 'archived' && p.status !== 'completed')
-        setProjects(activeProjects)
-        // Derive streak from completed projects count as a placeholder
-        setUserStreak(allProjects.filter(p => p.status === 'completed').length || allProjects.length)
+        const all = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        const active = all.filter(p => p.status !== 'archived' && p.status !== 'completed')
+        setProjects(active)
+        setUserStreak(all.filter(p => p.status === 'completed').length || all.length)
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((err) => {
+        console.error('Dashboard fetch error:', err)
+        setLoading(false)
+      })
   }, [user])
-
-  const handleTreeClick = (projectId) => {
-    navigate(`/treeview/${projectId}`)
-  }
-
-
 
   return (
     <main className='dash'>
@@ -87,7 +79,7 @@ export default function Dashboard() {
       <aside className={`dash__panel ${hoveredProject ? 'dash__panel--active' : ''}`}>
         <div className='dash__pill'>Project Details</div>
 
-        {hoveredProject ? (
+        {hoveredProject && (
           <div className='dash__panel-content'>
             <h3 className='panel__title'>{hoveredProject.title}</h3>
 
@@ -124,7 +116,10 @@ export default function Dashboard() {
                   className='panel__bar-fill'
                   style={{
                     width: hoveredProject.progress?.totalNodes
-                      ? `${Math.round((hoveredProject.progress.nodesCompleted / hoveredProject.progress.totalNodes) * 100)}%`
+                      ? `${Math.round(
+                          (hoveredProject.progress.nodesCompleted /
+                            hoveredProject.progress.totalNodes) * 100
+                        )}%`
                       : '0%'
                   }}
                 />
@@ -135,13 +130,12 @@ export default function Dashboard() {
               {hoveredProject.status}
             </div>
           </div>
-        ) : null}
+        )}
       </aside>
 
       {/* ── Forest field ── */}
       <section className='dash__field'>
 
-        {/* Top-right: streak + avatar */}
         <header className='dash__topRight'>
           <div className='dash__streak'>
             <span>{userStreak}</span>
@@ -155,7 +149,6 @@ export default function Dashboard() {
           </button>
         </header>
 
-        {/* Trees */}
         {loading ? (
           <div className='dash__loading'>Loading your forest…</div>
         ) : projects.length === 0 ? (
@@ -176,39 +169,29 @@ export default function Dashboard() {
                 style={{ left: pos.x, top: pos.y }}
                 onMouseEnter={() => setHovered(project)}
                 onMouseLeave={() => setHovered(null)}
-                onClick={() => handleTreeClick(project.id)}
+                onClick={() => navigate(`/treeview/${project.id}`)}
                 role='button'
                 tabIndex={0}
                 aria-label={project.title || 'Project tree'}
-                onKeyDown={e => e.key === 'Enter' && handleTreeClick(project.id)}
+                onKeyDown={e => e.key === 'Enter' && navigate(`/treeview/${project.id}`)}
               >
-                {/* Floating sprite */}
                 <div className='tree__floater'>
                   <img className='tree__sprite' src={sprite} alt='' draggable={false} />
                 </div>
-
-                {/* Isometric base platform */}
                 <div className='tree__base' />
-
-                {/* Label shown on hover */}
-                {isHov && (
-                  <div className='tree__label'>{project.title}</div>
-                )}
+                {isHov && <div className='tree__label'>{project.title}</div>}
               </div>
             )
           })
         )}
 
-        {/* Animated butterflies */}
         {BUTTERFLIES.map((b) => (
           <div key={b.id} className={`butterfly ${b.animClass}`} aria-hidden='true'>
             <img src={b.sprite} alt='' draggable={false} />
           </div>
         ))}
 
-        {/* Bottom navigation bar */}
         <BottomNav />
-import BottomNav from '../components/BottomNav'
 
       </section>
     </main>

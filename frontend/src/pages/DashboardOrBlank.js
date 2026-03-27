@@ -1,32 +1,30 @@
 import { useEffect, useState } from 'react'
-import { Outlet } from 'react-router-dom'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { auth, db } from '../firebase.js'
 import Dashboard from './Dashboard'
 import BlankDashboard from './BlankDashboard'
-import BottomNav from '../components/BottomNav'
 
 /**
- * This component checks if the current user has any projects in Firestore.
+ * Checks if the current user has any projects in Firestore.
  * If projects exist, renders Dashboard; otherwise, renders BlankDashboard.
- * Used as the index route for /dashboard.
+ * BottomNav is rendered inside each page — NOT here.
  */
 export default function DashboardOrBlank() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]         = useState(true)
   const [hasProjects, setHasProjects] = useState(false)
-  const [user, setUser] = useState(auth.currentUser)
+  const [user, setUser]               = useState(auth.currentUser)
 
-
+  // Wait for auth to resolve before doing anything
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((u) => {
       setUser(u)
+      if (!u) setLoading(false) // not logged in — stop loading
     })
     return () => unsub()
   }, [])
 
   useEffect(() => {
     if (!user) return
-    // Query projects where userId == user.uid
     const q = query(collection(db, 'projects'), where('userId', '==', user.uid))
     getDocs(q)
       .then((snapshot) => {
@@ -39,11 +37,8 @@ export default function DashboardOrBlank() {
       })
   }, [user])
 
-  if (loading) return <div style={{textAlign:'center',marginTop:40}}>Loading...</div>
-  return (
-    <>
-      {hasProjects ? <Dashboard /> : <BlankDashboard />}
-      <BottomNav />
-    </>
-  )
+  if (loading) return <div style={{ textAlign: 'center', marginTop: 40 }}>Loading...</div>
+
+  // Pass user down so Dashboard doesn't need to re-resolve auth
+  return hasProjects ? <Dashboard user={user} /> : <BlankDashboard />
 }
