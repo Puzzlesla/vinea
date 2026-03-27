@@ -1,0 +1,95 @@
+/* BottomNav.css */
+
+.bottom-nav {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 210, 225, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 99px;
+  padding: 8px 12px;
+  box-shadow:
+    0 4px 24px rgba(200, 80, 120, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  z-index: 20;
+  /* Prevent it from growing wider than the screen */
+  max-width: calc(100vw - 48px);
+}
+
+/* Every nav item */
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.15s ease;
+  min-width: 52px;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.06);
+}
+
+/* Active non-center item */
+.nav-item--active {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Center add button — elevated, but only highlighted when active */
+.nav-item--center {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0;
+  transform: translateY(-4px);
+}
+
+.nav-item--center:hover {
+  transform: translateY(-6px) scale(1.08);
+}
+
+.nav-item--center.nav-item--active {
+  background: rgba(240, 130, 170, 0.7);
+  box-shadow: 0 3px 12px rgba(200, 80, 120, 0.28);
+}
+
+/* Icon sizing — controlled here, not inline */
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  opacity: 0.65;
+  transition: opacity 0.15s ease;
+  display: block;
+}
+
+.nav-item--active .nav-icon,
+.nav-item--center .nav-icon {
+  opacity: 1;
+}
+
+/* Label above active item */
+.nav-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  color: #b03060;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  animation: label-in 0.2s ease;
+}
+
+@keyframes label-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
