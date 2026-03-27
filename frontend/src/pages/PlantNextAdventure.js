@@ -3,6 +3,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { nanoid } from 'nanoid'
+import ProjectAIWizard from '../components/ProjectAIWizard'
 import '../styles/AddProjectDashboard.css'
 
 const FILE_MAX_BYTES = 5 * 1024 * 1024 // 5 MB per file
@@ -54,8 +55,11 @@ const PlantNextAdventure = () => {
   const [uploadError, setUploadError] = useState('')
   const [dragActive, setDragActive] = useState(false)
   const [startMessage, setStartMessage] = useState('')
+  const [showWizard, setShowWizard] = useState(false)
+  const [wizardProps, setWizardProps] = useState(null)
   const fileInputRef = useRef(null)
   const navigate = useNavigate()
+
 
   const previewName = import.meta.env.VITE_DEV_PREVIEW_NAME?.trim()
   const displayName =
@@ -154,24 +158,31 @@ const PlantNextAdventure = () => {
       return
     }
     setStartMessage('')
-    const payload = {
-      description: trimmed,
+    if (!user) {
+      setStartMessage('You must be logged in to create a project.')
+      return
+    }
+    setWizardProps({
+      userId: user.uid,
+      title: trimmed.slice(0, 40) || 'Untitled Project',
+      visionPrompt: trimmed,
       startDate: startDate || null,
       endDate: endDate || null,
-      weeklyHours,
+      weeklyCommitmentHours: weeklyHours,
       tags: tags.map((t) => t.label),
-      files: files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
-    }
-    console.log('Start project', payload)
-    setStartMessage(
-      'Project draft saved locally. Connect this action to your API or Firestore to persist and generate the roadmap.',
-    )
+      documentUrls: [], 
+    })
+    setShowWizard(true)
   }
 
   const tagClass = (variant) => {
     if (variant === 'green') return 'add-project__tag add-project__tag--green'
     if (variant === 'pink') return 'add-project__tag add-project__tag--pink'
     return 'add-project__tag add-project__tag--outline'
+  }
+
+  if (showWizard && wizardProps) {
+    return <ProjectAIWizard {...wizardProps} />
   }
 
   return (
@@ -183,9 +194,33 @@ const PlantNextAdventure = () => {
       </div>
 
       <p className="add-project__crumb">
-        <Link className="add-project__crumb-link" to="/dashboard">
+        <button
+          type="button"
+          className="add-project__crumb-link"
+          style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit' }}
+          onClick={async () => {
+            if (!user) {
+              navigate('/dashboard')
+              return
+            }
+            // Query projects for this user
+            try {
+              const { collection, getDocs, query, where } = await import('firebase/firestore')
+              const { db } = await import('../firebase.js')
+              const q = query(collection(db, 'projects'), where('userId', '==', user.uid))
+              const snapshot = await getDocs(q)
+              if (snapshot.empty) {
+                navigate('/dashboard') // DashboardOrBlank will show BlankDashboard
+              } else {
+                navigate('/dashboard') // DashboardOrBlank will show Dashboard
+              }
+            } catch {
+              navigate('/dashboard')
+            }
+          }}
+        >
           Dashboard
-        </Link>
+        </button>
         <span className="add-project__crumb-sep">&gt;</span>
         <span>Add New Project</span>
       </p>
