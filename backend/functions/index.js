@@ -1,14 +1,18 @@
-import { onCall, HttpsError, logger } from "firebase-functions/v2/https";
+
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { setGlobalOptions } from "firebase-functions";
-import { defineString } from "firebase-functions/params";  // ← replaces dotenv
-import * as admin from "firebase-admin";
+import { defineString } from "firebase-functions/params";
+import { initializeApp } from "firebase-admin/app";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import OpenAI from "openai";
 
-const openAIKey = defineString("OPENAI_API_KEY");  // ← reads from .env file
+const openAIKey = defineString("OPENAI_API_KEY");
 
 setGlobalOptions({ maxInstances: 10 });
-admin.initializeApp();
-const db = admin.firestore();
+
+initializeApp();
+
+const db = getFirestore();
 
 
 
@@ -17,12 +21,12 @@ export const generateProjectTree = onCall({}, async (request) => {
     const openai = new OpenAI({ apiKey: openAIKey.value() });  
 
     if (!request.auth) {
-        logger.warn("Unauthenticated request to generateProjectTree");
+        console.warn("Unauthenticated request to generateProjectTree");
         throw new HttpsError("unauthenticated", "Please log in first!");
     }
     try{
     const { userPrompt, projectId } = request.data;
-    logger.info("Processing generateProjectTree request");
+    console.info("Processing generateProjectTree request");
         const systemPrompt = `You are the core reasoning engine for 'promptai', an intelligent workflow visualizer designed for visual learners. Your job is to break down massive, overwhelming projects into frictionless, bite-sized tasks based on the Atomic Habits philosophy.
         CRITICAL INSTRUCTIONS:
             1. JSON ONLY: Return ONLY a raw, minified JSON object. Do not wrap it in markdown backticks (e.g., \`\`\`json). Do not include any introductory or concluding text. If you output anything other than raw JSON, the system will crash.
@@ -66,7 +70,7 @@ export const generateProjectTree = onCall({}, async (request) => {
                     }
                 }`;
 
-        logger.info("Sending request to OpenAI");
+        console.info("Sending request to OpenAI");
 
         const response = await openai.chat.completions.create({
             model: "gpt-4o",
@@ -85,14 +89,14 @@ export const generateProjectTree = onCall({}, async (request) => {
         await db.collection("projects").doc(projectId).set({
             userId: request.auth.uid,
             status: "active",
-            ReactFlowData: aiData,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
+            reactFlowData: aiData,
+            createdAt: FieldValue.serverTimestamp()
         }, { merge: true });
 
-        logger.info("Project tree generated and saved successfully!");
+        console.info("Project tree generated and saved successfully!");
         return { success: true };
     } catch (error) {
-        logger.error("Error generating project tree:", error);
+        console.error("Error generating project tree:", error);
         throw new HttpsError("internal", "An error occurred while the AI was generating the project tree.");
     }
 });
