@@ -1,5 +1,3 @@
-/* BottomNav.css */
-
 .bottom-nav {
   position: absolute;
   bottom: 24px;
@@ -17,7 +15,6 @@
     0 4px 24px rgba(200, 80, 120, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   z-index: 20;
-  /* Prevent it from growing wider than the screen */
   max-width: calc(100vw - 48px);
 }
 
@@ -40,12 +37,10 @@
   transform: scale(1.06);
 }
 
-/* Active non-center item */
 .nav-item--active {
   background: rgba(255, 255, 255, 0.6);
 }
 
-/* Center add button — elevated, but only highlighted when active */
 .nav-item--center {
   border-radius: 50%;
   width: 48px;
@@ -64,7 +59,7 @@
   box-shadow: 0 3px 12px rgba(200, 80, 120, 0.28);
 }
 
-/* Icon sizing — controlled here, not inline */
+
 .nav-icon {
   width: 22px;
   height: 22px;
@@ -78,9 +73,8 @@
   opacity: 1;
 }
 
-/* Label above active item */
 .nav-label {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 9px;
   font-weight: 800;
   color: #b03060;

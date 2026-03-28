@@ -1,85 +1,100 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-// Import your initialized Firebase db
-import { db } from '../firebase' 
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
+import { auth, db } from '../firebase' 
+import { collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore'
 import '../styles/Shop.css'
 
-export default function Shop({ userId }) { // Assuming you pass the current user's ID
+export default function Shop() {
   const navigate = useNavigate()
-  
-  // 1. New State for Shop Items and Loading
+  const user = auth.currentUser
+
   const [shopItems, setShopItems] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // User state (Ideally, you fetch this from the 'users' collection in another useEffect)
-  const [xpBalance, setXpBalance]       = useState(2000)
-  const [ownedItems, setOwnedItems]     = useState(['theme_default', 'avatar_default'])
-  const [equippedTheme, setEquipped]    = useState('theme_default')
-  const [equippedAvatar, setEquippedAv] = useState('avatar_default')
+  // 1. User state now maps to our nested structure
+  const [userStats, setUserStats] = useState({
+    xpBalance: 0,
+    ownedItems: ['theme_default', 'avatar_default'],
+    equippedTheme: 'theme_default',
+    equippedAvatar: 'avatar_default'
+  })
 
-  // 2. Fetch Shop Items from Firestore
+  // 2. Fetch both Shop Items and User Data
   useEffect(() => {
-    const fetchShopItems = async () => {
+    const initShop = async () => {
+      if (!user) return
       try {
-        const querySnapshot = await getDocs(collection(db, 'shopItems'))
-        const itemsArray = querySnapshot.docs.map(doc => ({
-          id: doc.id, 
-          ...doc.data()
-        }))
-        setShopItems(itemsArray)
-      } catch (error) {
-        console.error("Error fetching shop items:", error)
+        // Fetch Shop Items (using the 'shopItems' collection name from our schema)
+        const shopSnap = await getDocs(collection(db, 'shopItems'))
+        const items = shopSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+        setShopItems(items)
+
+        // Fetch User Data to get real XP and Inventory
+        const userSnap = await getDoc(doc(db, 'users', user.uid))
+        if (userSnap.exists()) {
+          const data = userSnap.data()
+          setUserStats({
+            xpBalance: data.gamification?.xpBalance || 0,
+            ownedItems: data.inventory?.ownedItems || ['theme_default', 'avatar_default'],
+            equippedTheme: data.inventory?.equippedTheme || 'theme_default',
+            equippedAvatar: data.inventory?.equippedAvatar || 'avatar_default'
+          })
+        }
+      } catch (err) {
+        console.error("Shop Init Error:", err)
       } finally {
         setLoading(false)
       }
     }
+    initShop()
+  }, [user])
 
-    fetchShopItems()
-  }, [])
-
-  // 3. Update backend when purchasing
+  // 3. Handle Purchase with Nested Field Updates
   const handlePurchase = async (item) => {
-    if (xpBalance < item.price) return
+    if (userStats.xpBalance < item.cost) return // Check against item.cost (from schema)
 
-    const newXpBalance = xpBalance - item.price
-    const newOwnedItems = [...ownedItems, item.id]
+    const newXp = userStats.xpBalance - item.cost
+    const newOwned = [...userStats.ownedItems, item.id]
 
-    // Optimistic UI update
-    setXpBalance(newXpBalance)
-    
     try {
-      // Update the database (assuming you have a users collection)
-      const userRef = doc(db, 'users', userId)
+      const userRef = doc(db, 'users', user.uid)
       
-      if (!item.consumable) {
-        setOwnedItems(newOwnedItems)
-        await updateDoc(userRef, {
-          xpBalance: newXpBalance,
-          ownedItems: newOwnedItems
-        })
-        
-        if (item.category === 'theme') setEquipped(item.id)
-        if (item.category === 'avatar') setEquippedAv(item.id)
-      } else {
-        await updateDoc(userRef, { xpBalance: newXpBalance })
-        alert(`You bought a ${item.name}!`)
-      }
-    } catch (error) {
-      console.error("Purchase failed:", error)
-      // Revert state if backend update fails
-      setXpBalance(xpBalance) 
-      setOwnedItems(ownedItems)
+      // Update Firestore using dot notation for nested maps
+      await updateDoc(userRef, {
+        'gamification.xpBalance': newXp,
+        'inventory.ownedItems': newOwned
+      })
+
+      // Update local state
+      setUserStats(prev => ({ 
+        ...prev, 
+        xpBalance: newXp, 
+        ownedItems: newOwned 
+      }))
+      
+      alert(`Success! You've unlocked ${item.name}!`)
+    } catch (err) {
+      console.error("Purchase failed:", err)
     }
   }
 
-  const handleEquip = (item) => {
-    if (item.category === 'theme')  setEquipped(item.id)
-    if (item.category === 'avatar') setEquippedAv(item.id)
-    // Don't forget to sync this to Firestore too!
+  // 4. Handle Equip logic
+  const handleEquip = async (item) => {
+    const userRef = doc(db, 'users', user.uid)
+    const field = item.type === 'theme' ? 'inventory.equippedTheme' : 'inventory.equippedAvatar'
+    
+    try {
+      await updateDoc(userRef, { [field]: item.id })
+      setUserStats(prev => ({
+        ...prev,
+        [item.type === 'theme' ? 'equippedTheme' : 'equippedAvatar']: item.id
+      }))
+    } catch (err) {
+      console.error("Equip failed:", err)
+    }
   }
 
-  if (loading) return <div className="shop__loading">Loading Reward Center...</div>
+  if (loading) return <div className="shop__loading">Loading Rewards...</div>
 
   return (
     <div className='shop'>
@@ -87,64 +102,59 @@ export default function Shop({ userId }) { // Assuming you pass the current user
         <button className='shop__back' onClick={() => navigate(-1)}>← Back</button>
 
         <div className='shop__header'>
-          {/* Header content stays the same */}
+          <h1 className='shop__title'>Reward Center</h1>
+          <div className='shop__balance'>
+            <span className='shop__balance-label'>Your Balance:</span>
+            <span className='shop__balance-value'>✨ {userStats.xpBalance.toLocaleString()} XP</span>
+          </div>
         </div>
 
         <div className='shop__grid'>
           {shopItems.map((item) => {
-            const isOwned    = ownedItems.includes(item.id)
-            const isEquipped = equippedTheme === item.id || equippedAvatar === item.id
-            const canAfford  = xpBalance >= item.price
+            const isOwned = userStats.ownedItems.includes(item.id)
+            const isEquipped = userStats.equippedTheme === item.id || userStats.equippedAvatar === item.id
+            const canAfford = userStats.xpBalance >= item.cost
 
             return (
-              <div key={item.id} className={`shop__card ${isOwned ? 'shop__card--owned' : ''} ${isEquipped ? 'shop__card--equipped' : ''}`}>
-                <div className={`shop__preview shop__preview--${item.category}`}>
+              <div key={item.id} className={`shop__card ${isOwned ? 'shop__card--owned' : ''}`}>
+                <div className="shop__preview">
                   {isEquipped && <div className='shop__equipped-badge'>Equipped</div>}
-                  <div className='shop__category-badge'>{item.category}</div>
-                  {item.category === 'theme' && <ThemePreview variant={item.variant} />}
-                  {item.category === 'avatar' && (
-                    <div className='shop__avatar-circle' style={{ background: item.avatarBg }}>
+                  {item.type === 'theme' ? (
+                    <div className={`shop__theme-swatch shop__theme--${item.variant}`} />
+                  ) : (
+                    <div className='shop__avatar-icon' style={{ background: item.avatarBg }}>
                       {item.emoji}
                     </div>
                   )}
                 </div>
+                
                 <div className='shop__card-body'>
-                  <div className='shop__card-action'>
-                    {!isOwned ? (
-                      <button
-                        className='shop__btn'
-                        onClick={() => handlePurchase(item)}
-                        disabled={!canAfford}
-                      >
-                        {canAfford ? 'Purchase' : 'Not enough XP'}
-                      </button>
-                    ) : (
-                      <button
-                        className='shop__btn'
-                        onClick={() => handleEquip(item)}
-                        disabled={isEquipped}
-                      >
-                        {isEquipped ? 'Equipped' : 'Equip'}
-                      </button>
-                    )}
-                  </div>
+                  <h3 className='shop__item-name'>{item.name}</h3>
+                  <p className='shop__item-price'>{isOwned ? 'Owned' : `${item.cost} XP`}</p>
+                  
+                  {!isOwned ? (
+                    <button 
+                      className='shop__btn' 
+                      onClick={() => handlePurchase(item)}
+                      disabled={!canAfford}
+                    >
+                      {canAfford ? 'Buy' : 'Not enough XP'}
+                    </button>
+                  ) : (
+                    <button 
+                      className='shop__btn shop__btn--equip' 
+                      onClick={() => handleEquip(item)}
+                      disabled={isEquipped}
+                    >
+                      {isEquipped ? 'Equipped' : 'Equip'}
+                    </button>
+                  )}
                 </div>
               </div>
             )
           })}
         </div>
       </div>
-    </div>
-  )
-}
-
-function ThemePreview({ variant }) {
-  return (
-    <div className={`shop__mini-node shop__mini-node--${variant}`}>
-      <div style={{
-        width: 40, height: 6, borderRadius: 3,
-        background: variant === 'cyber' ? '#00e5ff' : 'rgba(255,255,255,0.6)'
-      }} />
     </div>
   )
 }

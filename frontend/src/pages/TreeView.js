@@ -274,7 +274,6 @@ function TreeViewContent({ project, projectId, user, onBack }) {
   )
 }
 
-// ─── Firestore loader ────────────────────────────────────────────────────────
 function TreeViewForProject({ projectId, user }) {
   const [project, setProject]     = useState(null)
   const [loadState, setLoadState] = useState('loading')
@@ -326,7 +325,7 @@ function TreeViewForProject({ projectId, user }) {
   return <TreeViewContent project={project} projectId={projectId} user={user} />
 }
 
-// ─── Page root ───────────────────────────────────────────────────────────────
+
 export default function TreeView() {
   const { projectId } = useParams()
   const [user, setUser] = useState(undefined)

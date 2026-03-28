@@ -2,7 +2,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Nunito:wght@400;600;700;800;900&display=swap');
 
-/* ── CSS variables (shared with LogIn) ── */
 :root {
   --cream:        #fdf8f4;
   --petal:        #fce4ec;
@@ -15,18 +14,16 @@
   --ink-muted:    #7a5060;
 }
 
-/* ── Layout ── */
 .dash {
   display: flex;
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
   background: #fff;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   position: relative;
 }
 
-/* Grain texture overlay — same as login */
 .dash::after {
   content: '';
   position: fixed;
@@ -37,7 +34,6 @@
   opacity: 0.45;
 }
 
-/* Soft cream radial warmth */
 .dash::before {
   content: '';
   position: absolute;
@@ -69,7 +65,6 @@
   overflow: hidden;
 }
 
-/* Greenery drapes over top of panel */
 .dash__panel-greenery {
   width: 130%;
   margin-left: -15%;
@@ -79,7 +74,6 @@
   flex-shrink: 0;
   mix-blend-mode: multiply;
   opacity: 0.85;
-  /* subtle sway matching login */
   animation: sway 9s ease-in-out infinite;
   transform-origin: top center;
 }
@@ -94,11 +88,10 @@
   background: rgba(253, 220, 235, 0.82);
 }
 
-/* Project Details pill */
 .dash__pill {
   background: rgba(244, 143, 177, 0.22);
   color: var(--deep-rose);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.10em;
@@ -246,7 +239,7 @@
   backdrop-filter: blur(10px);
   border-radius: 99px;
   padding: 6px 14px 6px 10px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 13px;
   font-weight: 800;
   color: var(--deep-rose);
@@ -283,7 +276,6 @@
   object-fit: cover;
 }
 
-/* ── Loading state ── */
 .dash__loading {
   position: absolute;
   top: 50%;
@@ -297,9 +289,7 @@
   letter-spacing: 0.06em;
 }
 
-/* ─────────────────────────────────────────
-   TREES
-───────────────────────────────────────── */
+
 .tree {
   position: absolute;
   display: flex;
@@ -345,7 +335,6 @@
   transition: filter 0.2s ease;
 }
 
-/* ── Frame.svg isometric base ── */
 .tree__base {
   width: var(--base-w);
   height: auto;
@@ -356,7 +345,6 @@
   transition: filter 0.2s ease;
 }
 
-/* Hover */
 .tree--hovered .tree__sprite {
   filter: drop-shadow(0 10px 22px rgba(194,24,91,0.28)) brightness(1.04);
 }
@@ -365,7 +353,6 @@
   filter: drop-shadow(0 6px 16px rgba(194,24,91,0.32)) brightness(1.06);
 }
 
-/* Pending / generating badge */
 .tree--pending .tree__sprite {
   opacity: 0.55;
   filter: grayscale(0.4);
@@ -379,7 +366,7 @@
   background: rgba(255,255,255,0.92);
   border: 1px solid var(--panel-border);
   color: var(--ink-muted);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -395,7 +382,6 @@
   50%       { opacity: 0.45; }
 }
 
-/* Hover label */
 .tree__label {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -515,7 +501,7 @@
 }
 
 .dock__label {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 9px;
   font-weight: 800;
   color: var(--deep-rose);

@@ -1,13 +1,11 @@
 
-
-/* ── Root layout ── */
 .cp {
   display: flex;
   width: 100vw;
   height: 100dvh;
   overflow: hidden;
   background: #fff;
-  font-family: 'Nunito', 'Rounded Mplus 1c', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   position: relative;
 }
 
@@ -32,7 +30,6 @@
   opacity: 0.45;
 }
 
-/* Soft ambient glow */
 .cp::before {
   content: '';
   position: absolute;
@@ -44,7 +41,6 @@
   z-index: 0;
 }
 
-/* ── Left sidebar ── */
 .cp__sidebar {
   position: relative;
   z-index: 10;
@@ -90,7 +86,6 @@
   transform: scale(0.97);
 }
 
-/* ── Main content area ── */
 .cp__content {
   flex: 1;
   position: relative;
@@ -100,7 +95,6 @@
   overflow: hidden;
 }
 
-/* ── Stats banner ── */
 .cp__banner {
   display: flex;
   align-items: center;
@@ -162,25 +156,22 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* ── Project grid ── */
 .cp__grid {
   flex: 1;
   overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  padding: 20px 24px 100px; /* bottom pad for dock */
+  padding: 20px 24px 100px; 
   align-content: start;
 }
 
-/* Scrollbar styling */
 .cp__grid::-webkit-scrollbar        { width: 6px; }
 .cp__grid::-webkit-scrollbar-track  { background: transparent; }
 .cp__grid::-webkit-scrollbar-thumb  { background: rgba(200,100,140,0.3); border-radius: 99px; }
 
-/* ── Project card ── */
 .cp__card {
-  background: #7dba78;   /* green card matching the design */
+  background: #7dba78;  
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -211,7 +202,6 @@
   outline-offset: 2px;
 }
 
-/* Tree illustration area (green bg with tree) */
 .cp__card-tree {
   background: #8dcf88;
   display: flex;
@@ -234,7 +224,6 @@
   transform: translateY(-4px) scale(1.05);
 }
 
-/* Card info area */
 .cp__card-info {
   padding: 10px 12px 14px;
   display: flex;
@@ -248,7 +237,6 @@
   color: #fff;
   margin: 0;
   line-height: 1.2;
-  /* Clamp to 2 lines */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -284,7 +272,6 @@
   font-weight: 800;
 }
 
-/* ── Loading / Empty ── */
 .cp__loading,
 .cp__empty {
   flex: 1;
@@ -300,7 +287,6 @@
   padding-bottom: 80px;
 }
 
-/* ── Bottom dock nav── */
 .dash__dock {
   position: absolute;
   bottom: 24px;
@@ -379,7 +365,6 @@
   opacity: 0.9;
 }
 
-/* ── Responsive ── */
 @media (max-width: 700px) {
   .cp__grid {
     grid-template-columns: repeat(2, 1fr);

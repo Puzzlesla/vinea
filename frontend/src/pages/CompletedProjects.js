@@ -111,8 +111,6 @@ export default function CompletedProjects() {
 
   const sidebarItems = [
     { label: 'Settings', path: '/dashboard/settings'},
-    { label: 'Statistics', path: '/dashboard/statistics'},
-    { label: 'Shop', path: '/dashboard/shop'},
     { label: 'Sign Out', onClick: handleSignOut },
   ]
 
