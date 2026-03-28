@@ -1,3 +1,4 @@
+/* global process */
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { setGlobalOptions } from "firebase-functions";
@@ -14,18 +15,43 @@ initializeApp();
 
 const db = getFirestore();
 
-
+/**
+ * Deployed functions do not read `backend/functions/.env` unless you configure
+ * env/params in Firebase or Cloud. Prefer: `firebase functions:secrets:set`
+ * or set OPENAI_API_KEY in Cloud Run for this function, or define the param.
+ */
+function getOpenAIKey() {
+    const fromEnv = process.env.OPENAI_API_KEY?.trim?.() ?? "";
+    const fromParam = openAIKey.value()?.trim?.() ?? "";
+    return fromEnv || fromParam;
+}
 
 
 export const generateProjectTree = onCall({}, async (request) => {
-    const openai = new OpenAI({ apiKey: openAIKey.value() });  
-
     if (!request.auth) {
         console.warn("Unauthenticated request to generateProjectTree");
         throw new HttpsError("unauthenticated", "Please log in first!");
     }
-    try{
-    const { userPrompt, projectId } = request.data;
+
+    const apiKey = getOpenAIKey();
+    if (!apiKey) {
+        console.error("generateProjectTree: OPENAI_API_KEY is missing (env + param empty)");
+        throw new HttpsError(
+            "failed-precondition",
+            "Server is missing OPENAI_API_KEY. Set it for Cloud Functions (Firebase params, secrets, or Cloud Run env) and redeploy."
+        );
+    }
+
+    const openai = new OpenAI({ apiKey });
+
+    try {
+    const { userPrompt, projectId } = request.data ?? {};
+    if (!projectId || typeof projectId !== "string") {
+        throw new HttpsError("invalid-argument", "A valid projectId is required.");
+    }
+    if (!userPrompt || typeof userPrompt !== "string" || !userPrompt.trim()) {
+        throw new HttpsError("invalid-argument", "A non-empty vision prompt is required.");
+    }
     console.info("Processing generateProjectTree request");
         const systemPrompt = `You are the core reasoning engine for 'promptai', an intelligent workflow visualizer designed for visual learners. Your job is to break down massive, overwhelming projects into frictionless, bite-sized tasks based on the Atomic Habits philosophy.
         CRITICAL INSTRUCTIONS:
@@ -83,20 +109,45 @@ export const generateProjectTree = onCall({}, async (request) => {
             ]
         });
 
-        const aiResponse = response.choices[0].message.content;
-        const aiData = JSON.parse(aiResponse);
+        const aiResponse = response.choices[0]?.message?.content;
+        if (!aiResponse) {
+            throw new Error("OpenAI returned empty message content");
+        }
+        let aiData;
+        try {
+            aiData = JSON.parse(aiResponse);
+        } catch (parseErr) {
+            console.error("generateProjectTree: JSON parse failed", parseErr, aiResponse?.slice?.(0, 500));
+            throw new HttpsError(
+                "internal",
+                "The AI response was not valid JSON. Try again or adjust the prompt."
+            );
+        }
 
         await db.collection("projects").doc(projectId).set({
             userId: request.auth.uid,
             status: "active",
             reactFlowData: aiData,
-            createdAt: FieldValue.serverTimestamp()
+            updatedAt: FieldValue.serverTimestamp(),
         }, { merge: true });
 
         console.info("Project tree generated and saved successfully!");
         return { success: true };
     } catch (error) {
-        console.error("Error generating project tree:", error);
-        throw new HttpsError("internal", "An error occurred while the AI was generating the project tree.");
+        if (error instanceof HttpsError) {
+            throw error;
+        }
+        console.error("Error generating project tree:", error?.message || error, error?.stack);
+        const msg = error?.message || String(error);
+        if (msg.includes("401") || msg.includes("Incorrect API key")) {
+            throw new HttpsError(
+                "failed-precondition",
+                "OpenAI rejected the API key. Check OPENAI_API_KEY in your deployment environment."
+            );
+        }
+        throw new HttpsError(
+            "internal",
+            "An error occurred while the AI was generating the project tree."
+        );
     }
 });

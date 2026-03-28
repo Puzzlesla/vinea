@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useNavigate } from 'react-router-dom'
-import { db } from '../firebase.js'
+import { app, db } from '../firebase.js'
+
+/** Must match the region where `generateProjectTree` is deployed (v2 default: us-central1). */
+const FUNCTIONS_REGION = 'us-central1'
 
 
 export default function ProjectAIWizard({
@@ -52,7 +55,7 @@ export default function ProjectAIWizard({
       setProgress('Generating roadmap...')
       setStatus('ai')
       
-      const functions = getFunctions()
+      const functions = getFunctions(app, FUNCTIONS_REGION)
       const generateProjectTree = httpsCallable(functions, 'generateProjectTree')
       await generateProjectTree({
         userPrompt: visionPrompt,
@@ -63,7 +66,21 @@ export default function ProjectAIWizard({
       if (onComplete) onComplete(projectId)
       else navigate(`/treeview/${projectId}`)
     } catch (err) {
-      setError(err.message || 'Something went wrong')
+      const code = err?.code
+      let message = err?.message || 'Something went wrong'
+      if (code === 'functions/not-found') {
+        message =
+          'Cloud Function not found. Deploy `generateProjectTree` and use region us-central1, or check your Firebase project.'
+      } else if (code === 'functions/internal') {
+        message =
+          'The roadmap generator failed on the server. If you deploy functions yourself, set OPENAI_API_KEY for this project (Firebase params, Cloud Run env, or Secret Manager) and check function logs: firebase functions:log --only generateProjectTree'
+      } else if (
+        code === 'functions/failed-precondition' ||
+        code === 'functions/invalid-argument'
+      ) {
+        message = err.message || message
+      }
+      setError(message)
       setStatus('error')
     }
   }

@@ -32,7 +32,14 @@ function App() {
           <Route path="shop" element={<Shop />} />
           <Route path="statistics" element={<Stats />} />
       </Route>
-      <Route path="/treeview/:projectId" element={<TreeView />} />
+      <Route
+        path="/treeview/:projectId"
+        element={
+          <RequireAuth>
+            <TreeView />
+          </RequireAuth>
+        }
+      />
     </Routes>
   )
 }
