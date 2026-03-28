@@ -1,34 +1,13 @@
-/* ──────────────────────────────────────────
-   TreeView.css  –  VINEA
-   Matches wireframe: white bg, pink sidebar,
-   pill title, organic tree, Cormorant type
-────────────────────────────────────────── */
-
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Nunito:wght@400;600;700;800;900&display=swap');
-
-:root {
-  --cream:      #fdf8f4;
-  --petal:      #fce4ec;
-  --rose:       #f48fb1;
-  --deep-rose:  #c2185b;
-  --muted-rose: #e8a0b8;
-  --ink:        #2c1a22;
-  --ink-muted:  #7a5060;
-  --border:     rgba(244, 143, 177, 0.22);
-}
-
-/* ── Page wrapper ── */
 .treeview-page {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
   background: #fff;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   position: relative;
   overflow: hidden;
 }
 
-/* Grain overlay — same as Dashboard/Login */
 .treeview-page::after {
   content: '';
   position: fixed;
@@ -39,11 +18,17 @@
   opacity: 0.45;
 }
 
-.treeview-page--mockup {
-  background: #fff;
+.treeview-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 65% 55% at 72% 48%, rgba(253,232,240,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 85%, rgba(252,220,232,0.3) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* State screens */
 .treeview-page__state {
   flex: 1;
   display: flex;
@@ -51,15 +36,16 @@
   justify-content: center;
   padding: 2rem;
   text-align: center;
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-style: italic;
-  color: var(--muted-rose);
+  color: var(--text-muted);
+  position: relative;
+  z-index: 1;
 }
 
-.treeview-page__state--error { color: var(--deep-rose); }
+.treeview-page__state--error { color: var(--accent-deep); }
 
-/* ── Shell ── */
 .treeview-shell {
   flex: 1;
   display: flex;
@@ -69,7 +55,6 @@
   z-index: 1;
 }
 
-/* ── Header — matches Dashboard topRight style ── */
 .treeview-shell__header {
   display: flex;
   align-items: center;
@@ -88,7 +73,7 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 800;
-  color: #c07090;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0;
   margin-bottom: 8px;
@@ -96,11 +81,10 @@
 }
 
 .treeview-shell__back:hover {
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   transform: translateX(-2px);
 }
 
-/* Project name pill — matches wireframe centre pill */
 .treeview-shell__title-pill {
   flex: 1;
   text-align: center;
@@ -109,12 +93,12 @@
   padding: 8px 24px;
   border-radius: 99px;
   background: rgba(244, 143, 177, 0.18);
-  color: var(--deep-rose);
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--accent-deep);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.1rem;
   letter-spacing: 0.04em;
-  border: 1px solid var(--border);
+  border: 1px solid var(--panel-border);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.7),
               0 2px 10px rgba(194,24,91,0.10);
   white-space: nowrap;
@@ -122,7 +106,6 @@
   text-overflow: ellipsis;
 }
 
-/* Right cluster: streak + avatar */
 .treeview-shell__header-right {
   display: flex;
   align-items: center;
@@ -137,9 +120,9 @@
   border-radius: 99px;
   background: rgba(255,255,255,0.82);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  color: var(--deep-rose);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  border: 1px solid var(--panel-border);
+  color: var(--accent-deep);
+  font-family: var(--font-sans);
   font-weight: 800;
   font-size: 13px;
   box-shadow: 0 2px 10px rgba(194,24,91,0.08);
@@ -154,26 +137,24 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1.5px solid var(--rose);
+  border: 1.5px solid var(--accent-rose);
   object-fit: cover;
   background: var(--petal);
   box-shadow: 0 2px 12px rgba(194,24,91,0.14);
 }
 
-/* ── Body: sidebar + main ── */
 .treeview-shell__body {
   flex: 1;
   display: flex;
   min-height: 0;
 }
 
-/* ── Sidebar — pink panel matching wireframe ── */
 .treeview-sidebar {
   width: min(250px, 32vw);
   flex-shrink: 0;
-  background: rgba(252, 228, 236, 0.72);
+  background: var(--panel-bg);
   backdrop-filter: blur(14px);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--panel-border);
   border-radius: 2% 20px 20px 0;
   padding: 20px 14px 24px;
   box-shadow: 4px 0 24px rgba(194,24,91,0.06);
@@ -183,7 +164,7 @@
 }
 
 .treeview-sidebar__heading {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--ink);
@@ -192,7 +173,7 @@
 }
 
 .treeview-sidebar__hint {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 600;
   line-height: 1.4;
@@ -212,7 +193,6 @@
   flex: 1;
 }
 
-/* Scrollbar */
 .treeview-sidebar__list::-webkit-scrollbar        { width: 4px; }
 .treeview-sidebar__list::-webkit-scrollbar-track  { background: transparent; }
 .treeview-sidebar__list::-webkit-scrollbar-thumb  { background: rgba(244,143,177,0.3); border-radius: 99px; }
@@ -223,7 +203,7 @@
   display: flex;
   align-items: flex-start;
   gap: 7px;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   color: var(--ink);
@@ -237,7 +217,7 @@
 
 .treeview-sidebar__row:hover {
   background: rgba(255,255,255,0.55);
-  border-color: var(--border);
+  border-color: var(--panel-border);
 }
 
 .treeview-sidebar__row--next {
@@ -253,7 +233,7 @@
 
 .treeview-sidebar__check {
   margin-top: 2px;
-  accent-color: var(--deep-rose);
+  accent-color: var(--accent-deep);
   flex-shrink: 0;
   width: 13px;
   height: 13px;
@@ -261,7 +241,7 @@
 
 .treeview-sidebar__step {
   font-weight: 800;
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   flex-shrink: 0;
   font-size: 10px;
 }
@@ -270,11 +250,10 @@
   line-height: 1.35;
 }
 
-/* Task label as a button (opens detail panel) */
 .treeview-sidebar__text--btn {
   background: none;
   border: none;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
   color: var(--ink);
@@ -287,12 +266,11 @@
 }
 
 .treeview-sidebar__text--btn:hover {
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-/* ── Subtask detail panel ── */
 .treeview-sidebar__detail {
   display: flex;
   flex-direction: column;
@@ -305,7 +283,7 @@
 .treeview-sidebar__detail-back {
   background: none;
   border: none;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 800;
   color: var(--ink-muted);
@@ -317,12 +295,12 @@
 }
 
 .treeview-sidebar__detail-back:hover {
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   transform: translateX(-2px);
 }
 
 .treeview-sidebar__detail-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--ink);
@@ -331,26 +309,25 @@
 }
 
 .treeview-sidebar__detail-time {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 700;
-  color: var(--muted-rose);
+  color: var(--text-muted);
   margin: 0;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .treeview-sidebar__detail-section {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 9px;
   font-weight: 800;
-  color: var(--muted-rose);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.10em;
   margin: 4px 0 2px;
 }
 
-/* Numbered subtask list */
 .treeview-sidebar__subtasks {
   list-style: none;
   padding: 0;
@@ -365,16 +342,16 @@
   align-items: flex-start;
   gap: 7px;
   background: rgba(255,255,255,0.6);
-  border: 1px solid var(--border);
+  border: 1px solid var(--panel-border);
   border-radius: 10px;
   padding: 7px 9px;
 }
 
 .treeview-sidebar__subtask-num {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 9px;
   font-weight: 900;
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   background: rgba(244,143,177,0.15);
   border-radius: 50%;
   width: 16px;
@@ -387,14 +364,13 @@
 }
 
 .treeview-sidebar__subtask-text {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   font-weight: 600;
   color: var(--ink);
   line-height: 1.4;
 }
 
-/* Resources list */
 .treeview-sidebar__resources {
   list-style: none;
   padding: 0;
@@ -405,10 +381,10 @@
 }
 
 .treeview-sidebar__resource {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 700;
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   background: rgba(244,143,177,0.10);
   border: 1px solid rgba(244,143,177,0.25);
   border-radius: 8px;
@@ -416,13 +392,12 @@
   line-height: 1.35;
 }
 
-/* Mark complete CTA button */
 .treeview-sidebar__detail-cta {
   margin-top: auto;
   padding: 10px 0;
   border-radius: 12px;
   border: none;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
@@ -440,9 +415,9 @@
 
 .treeview-sidebar__detail-cta--undo {
   background: rgba(244,143,177,0.18);
-  color: var(--deep-rose);
+  color: var(--accent-deep);
   box-shadow: none;
-  border: 1px solid var(--border);
+  border: 1px solid var(--panel-border);
 }
 
 .treeview-sidebar__detail-cta--undo:hover {
@@ -457,7 +432,6 @@
   box-shadow: none !important;
 }
 
-/* ── Main canvas area ── */
 .treeview-main {
   flex: 1;
   display: flex;
@@ -473,7 +447,7 @@
   margin: 0 0 10px;
   padding: 10px 20px;
   text-align: center;
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: var(--font-display);
   font-size: 0.95rem;
   font-style: italic;
   line-height: 1.5;
@@ -483,7 +457,6 @@
   
 }
 
-/* ── Tree canvas ── */
 .tree-canvas {
   width: 100%;
   max-width: 420px;
@@ -501,13 +474,11 @@
   filter: drop-shadow(0 4px 16px rgba(80,40,30,0.07));
 }
 
-/* Branch — warm brown matching wireframe */
 .tree-canvas__branch {
   opacity: 0.88;
   stroke-linecap: round;
 }
 
-/* Node ring — white halo */
 .tree-canvas__node-ring {
   fill: none;
   stroke: rgba(255,255,255,0.95);
@@ -520,7 +491,6 @@
   filter: drop-shadow(0 0 7px rgba(194,24,91,0.4));
 }
 
-/* Node fill — soft green matching wireframe */
 .tree-canvas__node-fill {
   fill: #a8d5a2;
   stroke: #6aaa63;
@@ -533,23 +503,20 @@
   stroke: #5a9e54;
 }
 
-/* Locked node — not yet reachable */
 .tree-canvas__node-fill--locked {
   fill: #ede8e3;
   stroke: #c8b8b0;
   opacity: 0.7;
 }
 
-/* Step number inside node */
 .tree-canvas__node-num {
   fill: #2a5c26;
   font-size: 15px;
   font-weight: 800;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   pointer-events: none;
 }
 
-/* Task label button below node */
 .tree-canvas__label-wrap {
   display: flex;
   justify-content: center;
@@ -558,7 +525,7 @@
 }
 
 .tree-canvas__label-btn {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   font-size: 9.5px;
   font-weight: 700;
   line-height: 1.3;
@@ -566,7 +533,7 @@
   color: var(--ink);
   background: rgba(255,255,255,0.90);
   backdrop-filter: blur(6px);
-  border: 1px solid var(--border);
+  border: 1px solid var(--panel-border);
   border-radius: 10px;
   padding: 4px 7px;
   max-width: 168px;
@@ -583,16 +550,14 @@
 
 .tree-canvas__label-btn:not(:disabled):hover {
   background: #fff;
-  border-color: var(--rose);
+  border-color: var(--accent-rose);
   box-shadow: 0 2px 10px rgba(194,24,91,0.14);
 }
 
-/* Pulse on current/next node */
 .tree-canvas__label-btn--pulse {
   animation: label-pulse 2.2s ease-in-out infinite;
 }
 
-/* Completed task label */
 .tree-canvas__label-btn--done {
   color: var(--ink-muted);
   text-decoration: line-through;
@@ -606,7 +571,6 @@
                           0 2px 10px rgba(194,24,91,0.18); }
 }
 
-/* ── Responsive ── */
 @media (max-width: 720px) {
   .treeview-shell__body {
     flex-direction: column;
@@ -617,7 +581,7 @@
     border-radius: 0 0 16px 16px;
     max-height: 40vh;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--panel-border);
   }
 
   .treeview-sidebar__list {

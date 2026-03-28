@@ -1,10 +1,4 @@
-/* ──────────────────────────────────────────
-   index.css - Global Styles & Themes
-────────────────────────────────────────── */
-
-/* 1. Master Control: Classic Theme (Default) */
 :root {
-  /* Typography & Rendering (Kept from your original) */
   font-family: 'Inter', 'Nunito', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -13,41 +7,83 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Theme Variables: Classic Pink/Cream */
+  --font-sans: 'Inter', 'Nunito', system-ui, -apple-system, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+
   --bg-color: #fce8ee;
   --text-main: #9b2145;
   --text-muted: #c07090;
   --card-bg: rgba(255, 255, 255, 0.75);
   --accent-color: #f497a9;
+  --accent-rose: #f48fb1;
+  --accent-deep: #c2185b;
+  --ink: #2c1a22;
+  --ink-muted: #7a5060;
   --link-color: #646cff;
   --link-hover: #535bf2;
+
+  --panel-bg: rgba(253, 232, 240, 0.72);
+  --panel-border: rgba(244, 143, 177, 0.22);
+  --petal: #fce4ec;
+  --viewer-surface: #ffffff;
+  --surface-raised: #ffffff;
+  --viewer-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  --ambient-radials:
+    radial-gradient(ellipse 65% 55% at 72% 48%, rgba(253, 232, 240, 0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 85%, rgba(252, 220, 232, 0.3) 0%, transparent 60%);
 }
 
-/* 2. Master Control: Cyberpunk Theme */
 [data-theme='theme_cyberpunk'] {
   --bg-color: #0d0d1a;
   --text-main: #00e5ff;
   --text-muted: #8892b0;
   --card-bg: rgba(20, 20, 35, 0.85);
   --accent-color: #ff007f;
+  --accent-rose: #ff007f;
+  --accent-deep: #00e5ff;
+  --ink: #e0e6ff;
+  --ink-muted: #8892b0;
   --link-color: #00e5ff;
   --link-hover: #ff007f;
+  --panel-bg: rgba(20, 20, 35, 0.85);
+  --panel-border: rgba(0, 229, 255, 0.25);
+  --petal: rgba(20, 20, 35, 0.9);
+  --viewer-surface: #0d0d1a;
+  --surface-raised: rgba(30, 30, 48, 0.95);
+  --ambient-radials:
+    radial-gradient(ellipse 65% 55% at 72% 48%, rgba(0, 229, 255, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 85%, rgba(255, 0, 127, 0.06) 0%, transparent 60%);
 }
 
-/* ──────────────────────────────────────────
-   Global HTML Elements
-────────────────────────────────────────── */
+[data-theme='dark'] {
+  --bg-color: #0d0d1a;
+  --text-main: #00e5ff;
+  --text-muted: #8892b0;
+  --card-bg: rgba(20, 20, 35, 0.85);
+  --accent-color: #ff007f;
+  --accent-rose: #ff007f;
+  --accent-deep: #00e5ff;
+  --ink: #e0e6ff;
+  --ink-muted: #8892b0;
+  --link-color: #00e5ff;
+  --link-hover: #ff007f;
+  --panel-bg: rgba(20, 20, 35, 0.85);
+  --panel-border: rgba(0, 229, 255, 0.25);
+  --petal: rgba(20, 20, 35, 0.9);
+  --viewer-surface: #0d0d1a;
+  --surface-raised: rgba(30, 30, 48, 0.95);
+  --ambient-radials:
+    radial-gradient(ellipse 65% 55% at 72% 48%, rgba(0, 229, 255, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 85%, rgba(255, 0, 127, 0.06) 0%, transparent 60%);
+}
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  
-  /* Use the variables here! */
   background-color: var(--bg-color);
   color: var(--text-main);
-  
-  /* Smoothly animate the colors when the user equips a new theme */
+  font-family: var(--font-sans);
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
@@ -65,4 +101,53 @@ a {
 
 a:hover {
   color: var(--link-hover);
+}
+
+.viewer-page {
+  position: relative;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  background-color: var(--viewer-surface);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+}
+
+.viewer-page.viewer-page__loading {
+  background-color: #fff;
+}
+
+.viewer-page.viewer-page__loading::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.45;
+}
+
+.viewer-page.viewer-page__loading::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 65% 55% at 72% 48%, rgba(253,232,240,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 35% at 20% 85%, rgba(252,220,232,0.3) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.viewer-page__loading {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
 }

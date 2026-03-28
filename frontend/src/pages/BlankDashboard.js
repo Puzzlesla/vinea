@@ -7,7 +7,7 @@ const BlankDashboard = () => {
 
   return (
     <>
-      <div className="blank-dash">
+      <div className="blank-dash viewer-page">
         <p className="blank-dash__label">blank dashboard</p>
         <button
           type="button"

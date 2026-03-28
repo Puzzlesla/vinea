@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase.js'
 
-/** In dev (`npm run dev`), skip the login redirect unless `VITE_REQUIRE_AUTH=true` in `.env`. Production always requires auth. */
 const skipAuthRedirect =
   import.meta.env.PROD ? false : import.meta.env.VITE_REQUIRE_AUTH !== 'true'
 

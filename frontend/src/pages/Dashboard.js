@@ -6,7 +6,6 @@ import tree2 from '../assets/tree2.svg'
 import butterflyLight from '../assets/butterfly-light-green.svg'
 import butterflyLightRight from '../assets/butterfly-light-green-right.svg'
 import butterflyDark from '../assets/butterfly-dark-green.svg'
-import greenery from '../assets/greenery.png'
 import frameBase from '../assets/Frame.svg'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -34,7 +33,6 @@ const TREE_POSITIONS = [
   { x: '88%', y: '14%', size: 'xl' },
 ]
 
-// Show these statuses on the forest — excludes completed + archived
 const ACTIVE_STATUSES = new Set(['active', 'pending'])
 
 function formatDate(isoStr) {
@@ -61,13 +59,11 @@ export default function Dashboard({ user: userProp }) {
   useEffect(() => {
     if (!user) return
 
-    // ── Use onSnapshot so new projects appear instantly without a refresh ──
     const q = query(collection(db, 'projects'), where('userId', '==', user.uid))
     const unsub = onSnapshot(q,
       (snapshot) => {
         const all = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
-        // Show active + pending; hide completed + archived
         const visible = all.filter(p => ACTIVE_STATUSES.has(p.status))
         setProjects(visible)
         setUserStreak(all.filter(p => p.status === 'completed').length || all.length)
@@ -83,11 +79,8 @@ export default function Dashboard({ user: userProp }) {
   }, [user])
 
   return (
-    <main className='dash'>
-
-      {/* ── Left side panel ── */}
+    <main className="dash viewer-page">
       <aside className={`dash__panel ${hoveredProject ? 'dash__panel--active' : ''}`}>
-        <img src={greenery} alt='' className='dash__panel-greenery' />
         <div className='dash__pill'>Project Details</div>
 
         {hoveredProject && (
@@ -144,8 +137,7 @@ export default function Dashboard({ user: userProp }) {
         )}
       </aside>
 
-      {/* ── Forest field ── */}
-      <section className='dash__field'>
+      <section className="dash__field">
 
         <header className='dash__topRight'>
           <div className='dash__streak'>
@@ -185,17 +177,14 @@ export default function Dashboard({ user: userProp }) {
                   <img className='tree__sprite' src={sprite} alt='' draggable={false} />
                 </div>
                 <img className='tree__base' src={frameBase} alt='' draggable={false} />
-                {isHov && <div className='tree__label'>{project.title}</div>}
-
-                {/* Generating indicator for pending projects */}
-                {project.status === 'pending'}
+                {isHov && <div className="tree__label">{project.title}</div>}
               </div>
             )
           })
         )}
 
         {BUTTERFLIES.map((b) => (
-          <div key={b.id} className={`butterfl ${b.animClass}`} aria-hidden='true'>
+          <div key={b.id} className={`butterfly ${b.animClass}`} aria-hidden="true">
             <img src={b.sprite} alt='' draggable={false} />
           </div>
         ))}

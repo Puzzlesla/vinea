@@ -4,21 +4,15 @@ import { auth, db } from '../firebase.js'
 import Dashboard from './Dashboard'
 import BlankDashboard from './BlankDashboard'
 
-/**
- * Checks if the current user has any projects in Firestore.
- * If projects exist, renders Dashboard; otherwise, renders BlankDashboard.
- * BottomNav is rendered inside each page — NOT here.
- */
 export default function DashboardOrBlank() {
-  const [loading, setLoading]         = useState(true)
+  const [loading, setLoading] = useState(true)
   const [hasProjects, setHasProjects] = useState(false)
-  const [user, setUser]               = useState(auth.currentUser)
+  const [user, setUser] = useState(auth.currentUser)
 
-  // Wait for auth to resolve before doing anything
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((u) => {
       setUser(u)
-      if (!u) setLoading(false) // not logged in — stop loading
+      if (!u) setLoading(false)
     })
     return () => unsub()
   }, [])
@@ -37,8 +31,9 @@ export default function DashboardOrBlank() {
       })
   }, [user])
 
-  if (loading) return <div style={{ textAlign: 'center', marginTop: 40 }}>Loading...</div>
+  if (loading) {
+    return <div className="viewer-page viewer-page__loading">Loading…</div>
+  }
 
-  // Pass user down so Dashboard doesn't need to re-resolve auth
   return hasProjects ? <Dashboard user={user} /> : <BlankDashboard />
 }

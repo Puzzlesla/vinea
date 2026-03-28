@@ -3,10 +3,9 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useNavigate } from 'react-router-dom'
 import { app, db } from '../firebase.js'
+import '../styles/ProjectAIWizard.css'
 
-/** Must match the region where `generateProjectTree` is deployed (v2 default: us-central1). */
 const FUNCTIONS_REGION = 'us-central1'
-
 
 export default function ProjectAIWizard({
   userId,
@@ -29,7 +28,6 @@ export default function ProjectAIWizard({
     setError('')
     setProgress('Creating project...')
     try {
-      
       const docRef = await addDoc(collection(db, 'projects'), {
         userId,
         schemaVersion: '1.0',
@@ -54,7 +52,7 @@ export default function ProjectAIWizard({
       const projectId = docRef.id
       setProgress('Generating roadmap...')
       setStatus('ai')
-      
+
       const functions = getFunctions(app, FUNCTIONS_REGION)
       const generateProjectTree = httpsCallable(functions, 'generateProjectTree')
       await generateProjectTree({
@@ -86,17 +84,17 @@ export default function ProjectAIWizard({
   }
 
   return (
-    <div style={{padding:32, maxWidth:480, margin:'0 auto', textAlign:'center'}}>
+    <div className="wizard viewer-page">
       {status === 'idle' && (
-        <button className="add-project__start" onClick={handleStart}>
+        <button type="button" className="add-project__start" onClick={handleStart}>
           Generate Project Roadmap
         </button>
       )}
       {status !== 'idle' && (
         <div>
-          <div style={{marginBottom:16}}>{progress}</div>
-          {status === 'error' && <div style={{color:'red'}}>{error}</div>}
-          {status === 'done' && <div style={{color:'green'}}>Project created and AI roadmap generated!</div>}
+          <div className="wizard__progress">{progress}</div>
+          {status === 'error' && <div className="wizard__error">{error}</div>}
+          {status === 'done' && <div className="wizard__success">Project created and AI roadmap generated!</div>}
         </div>
       )}
     </div>

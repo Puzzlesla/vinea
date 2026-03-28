@@ -1,12 +1,12 @@
 import { auth } from '../firebase.js'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { nanoid } from 'nanoid'
 import ProjectAIWizard from '../components/ProjectAIWizard'
 import '../styles/AddProjectDashboard.css'
 
-const FILE_MAX_BYTES = 5 * 1024 * 1024 // 5 MB per file
+const FILE_MAX_BYTES = 5 * 1024 * 1024
 const MAX_FILES = 8
 
 function formatBytes(n) {
@@ -170,7 +170,7 @@ const PlantNextAdventure = () => {
       endDate: endDate || null,
       weeklyCommitmentHours: weeklyHours,
       tags: tags.map((t) => t.label),
-      documentUrls: [], 
+      documentUrls: [],
     })
     setShowWizard(true)
   }
@@ -186,44 +186,16 @@ const PlantNextAdventure = () => {
   }
 
   return (
-    <div className="add-project">
+    <div className="add-project viewer-page">
       <div className="add-project__top-bar">
         <button type="button" className="add-project__sign-out" onClick={handleSignOut}>
           Sign out
         </button>
       </div>
 
-      <p className="add-project__crumb">
-        <button
-          type="button"
-          className="add-project__crumb-link"
-          style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit' }}
-          onClick={async () => {
-            if (!user) {
-              navigate('/dashboard')
-              return
-            }
-            // Query projects for this user
-            try {
-              const { collection, getDocs, query, where } = await import('firebase/firestore')
-              const { db } = await import('../firebase.js')
-              const q = query(collection(db, 'projects'), where('userId', '==', user.uid))
-              const snapshot = await getDocs(q)
-              if (snapshot.empty) {
-                navigate('/dashboard') // DashboardOrBlank will show BlankDashboard
-              } else {
-                navigate('/dashboard') // DashboardOrBlank will show Dashboard
-              }
-            } catch {
-              navigate('/dashboard')
-            }
-          }}
-        >
-          Dashboard
-        </button>
-        <span className="add-project__crumb-sep">&gt;</span>
-        <span>Add New Project</span>
-      </p>
+      <button type="button" className="add-project__back" onClick={() => navigate(-1)}>
+        ← Back
+      </button>
 
       <h1 className="add-project__title">Plant Your Next Adventure</h1>
       <p className="add-project__greet">Welcome, {displayName}. What are you working on?</p>
@@ -380,21 +352,7 @@ const PlantNextAdventure = () => {
         </button>
       </footer>
 
-      {startMessage ? (
-        <p
-          style={{
-            textAlign: 'center',
-            color: '#5c5c5c',
-            fontSize: 14,
-            marginTop: 16,
-            maxWidth: 560,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-          }}
-        >
-          {startMessage}
-        </p>
-      ) : null}
+      {startMessage ? <p className="add-project__hint-message">{startMessage}</p> : null}
     </div>
   )
 }
